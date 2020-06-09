@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 public class UpdatePacket implements Serializable {
 	
+
+	private static final long serialVersionUID = 6767077442609585034L;
+	
 	private int[][] fields;
 	private int[][] power;
 	private int currentPlayer;

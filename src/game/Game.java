@@ -1,5 +1,8 @@
 package game;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JOptionPane;
 
 import game.gui.GameWindow;
@@ -19,6 +22,9 @@ public abstract class Game {
 	public static final int KING_ONE = 3;
 	public static final int KING_TWO = 4;
 	
+	protected String[] cardTexts;
+	protected ActionListener[] actions;
+	
 	protected int[][] fields;
 	protected int[][] power;
 	
@@ -27,14 +33,14 @@ public abstract class Game {
 	protected int kingTwoX;
 	protected int kingTwoY;
 	
-	private Window window;
+	protected Window window;
 	protected GameWindow gameWindow;
 	protected int currentPlayer;
 	protected int thisPlayer;
 	
 	public Game(int thisPlayer) {
 		this.thisPlayer = thisPlayer;
-		window = new Window(this, "Zavrsni", X, Y);
+		window = new Window(this, "Zavrsni", 1500, Y);
 		gameWindow = new GameWindow(this);
 		fields = new int[5][5];
 		power = new int[5][5];
@@ -84,4 +90,6 @@ public abstract class Game {
 	public int[][] getPower() {
 		return power;
 	}
+	
+
 }

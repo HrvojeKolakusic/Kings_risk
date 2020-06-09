@@ -13,6 +13,9 @@ import game.res.Resources;
 
 public class GameWindow extends JPanel {
 	
+
+	private static final long serialVersionUID = 8326219303276685725L;
+	
 	private Game game;
 
 	public GameWindow(Game game) {

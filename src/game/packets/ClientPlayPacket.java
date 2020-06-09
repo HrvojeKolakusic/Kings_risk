@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class ClientPlayPacket implements Serializable {
 	
+	private static final long serialVersionUID = 4322592436305797128L;
+	
 	private int x;
 	private int y;
 	
