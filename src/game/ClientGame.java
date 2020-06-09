@@ -36,6 +36,7 @@ public class ClientGame extends Game {
 		if (object instanceof UpdatePacket) {
 			UpdatePacket packet = (UpdatePacket) object;
 			fields = packet.getFields();
+			power = packet.getPower();
 			currentPlayer = packet.getCurrentPlayer();
 			kingOneX = packet.getKingOneX();
 			kingOneY = packet.getKingOneY();
@@ -43,7 +44,7 @@ public class ClientGame extends Game {
 			kingTwoY = packet.getKingTwoY();
 		} else if (object instanceof GameEndPacket) {
 			GameEndPacket packet = (GameEndPacket) object;
-			showWinner(0); //update
+			showWinner(packet.getWinner());
 		}
 		
 		gameWindow.repaint();
@@ -53,12 +54,13 @@ public class ClientGame extends Game {
 	private boolean validMove(int x, int y) {
 		
 		if (fields[x][y] == currentPlayer) return true;
-		
-		if (x == this.kingTwoX) {
-			if ((y-1) == this.kingTwoY || (y+1) == this.kingTwoY) return true;
-		}
-		if (y == this.kingTwoY) {
-			if ((x-1) == this.kingTwoX || (x+1) == this.kingTwoX) return true;
+		if (power[kingTwoX][kingTwoY] > power[x][y]) {
+			if (x == this.kingTwoX) {
+				if ((y-1) == this.kingTwoY || (y+1) == this.kingTwoY) return true;
+			}
+			if (y == this.kingTwoY) {
+				if ((x-1) == this.kingTwoX || (x+1) == this.kingTwoX) return true;
+			}
 		}
 		
 		return false;

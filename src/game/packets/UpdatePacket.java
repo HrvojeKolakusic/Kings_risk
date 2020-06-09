@@ -5,14 +5,16 @@ import java.io.Serializable;
 public class UpdatePacket implements Serializable {
 	
 	private int[][] fields;
+	private int[][] power;
 	private int currentPlayer;
 	private int kingOneX;
 	private int kingOneY;
 	private int kingTwoX;
 	private int kingTwoY;
 	
-	public UpdatePacket(int[][] fields, int currentPlayer, int kingOneX, int kingOneY, int kingTwoX, int kingTwoY) {
+	public UpdatePacket(int[][] fields, int[][] power, int currentPlayer, int kingOneX, int kingOneY, int kingTwoX, int kingTwoY) {
 		this.fields = fields;
+		this.power = power;
 		this.currentPlayer = currentPlayer;
 		this.kingOneX = kingOneX;
 		this.kingOneY = kingOneY;
@@ -22,6 +24,10 @@ public class UpdatePacket implements Serializable {
 
 	public int[][] getFields() {
 		return fields;
+	}
+	
+	public int[][] getPower() {
+		return power;
 	}
 
 	public int getCurrentPlayer() {

@@ -44,6 +44,15 @@ public abstract class Game {
 		kingTwoY = 4;
 		fields[0][0] = KING_ONE;
 		fields[4][4] = KING_TWO;
+		
+		for (int i = 0; i < 5; ++i) {
+			for (int j = 0; j < 5; ++j) {
+				power[i][j] = 1;
+			}
+		}
+		power[0][0] = 8;
+		power[4][4] = 8;
+		
 		window.add(gameWindow);
 		currentPlayer = Game.PLAYER_ONE;
 		window.setVisible(true);
@@ -55,7 +64,12 @@ public abstract class Game {
 	public abstract void close();
 	
 	protected void showWinner(int winner) {
-		JOptionPane.showMessageDialog(null, "kraj"); // update
+		
+		if (winner == NOBODY) JOptionPane.showMessageDialog(null, "TIE!");
+		else {
+			if (winner == PLAYER_ONE) JOptionPane.showMessageDialog(null, "Player one WINS!");
+			else JOptionPane.showMessageDialog(null, "Player two WINS!");
+		}
 	}
 	
 	protected boolean isMyTurn() {
@@ -65,5 +79,9 @@ public abstract class Game {
 	
 	public int[][] getFields() {
 		return fields;
+	}
+	
+	public int[][] getPower() {
+		return power;
 	}
 }
