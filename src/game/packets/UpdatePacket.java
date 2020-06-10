@@ -14,8 +14,9 @@ public class UpdatePacket implements Serializable {
 	private int kingOneY;
 	private int kingTwoX;
 	private int kingTwoY;
+	private String text;
 	
-	public UpdatePacket(int[][] fields, int[][] power, int currentPlayer, int kingOneX, int kingOneY, int kingTwoX, int kingTwoY) {
+	public UpdatePacket(int[][] fields, int[][] power, int currentPlayer, int kingOneX, int kingOneY, int kingTwoX, int kingTwoY, String text) {
 		this.fields = fields;
 		this.power = power;
 		this.currentPlayer = currentPlayer;
@@ -23,6 +24,7 @@ public class UpdatePacket implements Serializable {
 		this.kingOneY = kingOneY;
 		this.kingTwoX = kingTwoX;
 		this.kingTwoY = kingTwoY;
+		this.text = text;
 	}
 
 	public int[][] getFields() {
@@ -53,6 +55,8 @@ public class UpdatePacket implements Serializable {
 		return kingTwoY;
 	}
 	
-	
+	public String getText() {
+		return text;
+	}
 
 }

@@ -8,10 +8,12 @@ public class ClientCardPacket implements Serializable {
 	
 	private int[][] fields;
 	private int[][] power;
+	private int card;
 	
-	public ClientCardPacket(int[][] fields, int[][] power) {
+	public ClientCardPacket(int[][] fields, int[][] power, int card) {
 		this.fields = fields;
 		this.power = power;
+		this.card = card;
 	}
 
 	public int[][] getFields() {
@@ -20,5 +22,9 @@ public class ClientCardPacket implements Serializable {
 
 	public int[][] getPower() {
 		return power;
+	}
+	
+	public int getCard() {
+		return card;
 	}
 }

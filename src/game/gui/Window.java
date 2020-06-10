@@ -1,12 +1,13 @@
 package game.gui;
 
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.TextArea;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 
 import game.Game;
 
@@ -20,7 +21,7 @@ public class Window extends JFrame {
 	public JButton btn2;
 	public JButton btn3;
 	public JButton btn4;
-	public JLabel textBox;
+	public TextArea textBox;
 
 	public Window(Game game, String title, int x, int y) {
 		super(title);
@@ -34,22 +35,28 @@ public class Window extends JFrame {
 		
 		btn1 = new JButton("btn1");
 		btn1.setBounds(900, 0, 300, 300);
+		btn1.setFont(new Font("Arial", Font.PLAIN, 16));
 		add(btn1);
 		
 		btn2 = new JButton("btn2");
 		btn2.setBounds(1200, 0, 300, 300);
+		btn2.setFont(new Font("Arial", Font.PLAIN, 16));
 		add(btn2);
 		
 		btn3 = new JButton("btn1");
 		btn3.setBounds(900, 300, 300, 300);
+		btn3.setFont(new Font("Arial", Font.PLAIN, 16));
 		add(btn3);
 		
 		btn4 = new JButton("btn1");
 		btn4.setBounds(1200, 300, 300, 300);
+		btn4.setFont(new Font("Arial", Font.PLAIN, 16));
 		add(btn4);
 		
-		textBox = new JLabel("ovo je messageBox");
+		textBox = new TextArea("Potez: 1\nTrenutni igrac: Plavi");
 		textBox.setBounds(900, 600, 600, 300);
+		textBox.setFont(new Font("Arial", Font.PLAIN, 20));
+		textBox.setEditable(false);
 		add(textBox);
 		
 		

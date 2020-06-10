@@ -22,7 +22,7 @@ public abstract class Game {
 	public static final int KING_TWO = 4;
 	
 	
-	public static final int MAX_CARDS = 8;
+	public static final int MAX_CARDS = 12;
 	protected boolean[] takenCards;
 	protected String[] cardTexts;
 	protected ActionListener[] actions;

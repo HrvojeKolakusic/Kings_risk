@@ -49,6 +49,7 @@ public class ClientGame extends Game {
 			kingOneY = packet.getKingOneY();
 			kingTwoX = packet.getKingTwoX();
 			kingTwoY = packet.getKingTwoY();
+			window.textBox.setText(packet.getText());
 		} else if (object instanceof GameEndPacket) {
 			GameEndPacket packet = (GameEndPacket) object;
 			showWinner(packet.getWinner());
@@ -158,8 +159,8 @@ public class ClientGame extends Game {
 	
 	// CARDS
 	private void initCards() {
-		cardTexts = new String[8];
-		actions = new ActionListener[8];
+		cardTexts = new String[MAX_CARDS];
+		actions = new ActionListener[MAX_CARDS];
 		
 		cardTexts[0] = "Svoja polja +1, svoj kralj =1";
 		actions[0] = new ActionListener() {
@@ -174,7 +175,7 @@ public class ClientGame extends Game {
 						}
 					}
 					power[kingTwoX][kingTwoY] = 1;
-					connection.sendPacket(new ClientCardPacket(fields, power));
+					connection.sendPacket(new ClientCardPacket(fields, power, 0));
 				}
 
 			}
@@ -189,7 +190,7 @@ public class ClientGame extends Game {
 				if (isMyTurn()) {
 					power[kingTwoX][kingTwoY] += 3;
 					if (power[kingTwoX][kingTwoY] > 9) power[kingTwoX][kingTwoY] = 9;
-					connection.sendPacket(new ClientCardPacket(fields, power));
+					connection.sendPacket(new ClientCardPacket(fields, power, 1));
 				}
 			}
 		};
@@ -207,7 +208,7 @@ public class ClientGame extends Game {
 						}
 					}
 					power[kingTwoX][kingTwoY] = 1;
-					connection.sendPacket(new ClientCardPacket(fields, power));
+					connection.sendPacket(new ClientCardPacket(fields, power, 2));
 				}
 			}
 		};
@@ -221,12 +222,12 @@ public class ClientGame extends Game {
 				if (isMyTurn()) {
 					power[kingOneX][kingOneY] -= 3;
 					if (power[kingOneX][kingOneY] < 1) power[kingOneX][kingOneY] = 1;
-					connection.sendPacket(new ClientCardPacket(fields, power));
+					connection.sendPacket(new ClientCardPacket(fields, power, 3));
 				}
 			}
 		};
 		
-		cardTexts[4] = "Zauzmi kraljev red, kralj =1";
+		cardTexts[4] = "Zauzmi kraljev stupac, kralj =1";
 		actions[4] = new ActionListener() {
 			
 			@Override
@@ -241,12 +242,12 @@ public class ClientGame extends Game {
 						}
 					}
 					power[kingTwoX][kingTwoY] = 1;
-					connection.sendPacket(new ClientCardPacket(fields, power));
+					connection.sendPacket(new ClientCardPacket(fields, power, 4));
 				}
 			}
 		};
 		
-		cardTexts[5] = "Zauzmi kraljev stupac, kralj =1";
+		cardTexts[5] = "Zauzmi kraljev red, kralj =1";
 		actions[5] = new ActionListener() {
 			
 			@Override
@@ -261,7 +262,7 @@ public class ClientGame extends Game {
 						}
 					}
 					power[kingTwoX][kingTwoY] = 1;
-					connection.sendPacket(new ClientCardPacket(fields, power));
+					connection.sendPacket(new ClientCardPacket(fields, power, 5));
 				}
 			}
 		};
@@ -292,7 +293,7 @@ public class ClientGame extends Game {
 							if (fields[i][j] == Game.PLAYER_TWO || fields[i][j] == Game.KING_TWO) power[i][j] = 1;
 						}
 					}
-					connection.sendPacket(new ClientCardPacket(fields, power));
+					connection.sendPacket(new ClientCardPacket(fields, power, 6));
 				}
 			}
 		};
@@ -323,7 +324,110 @@ public class ClientGame extends Game {
 							if (fields[i][j] == Game.PLAYER_TWO || fields[i][j] == Game.KING_TWO) power[i][j] = 1;
 						}
 					}
-					connection.sendPacket(new ClientCardPacket(fields, power));
+					connection.sendPacket(new ClientCardPacket(fields, power, 7));
+				}
+			}
+		};
+		
+		cardTexts[8] = "Zauzmi susjedna, kralj -3";
+		actions[8] = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (isMyTurn()) {
+					for (int i = -1; i < 2; ++i) {
+						for (int j = -1; j < 2; ++j) {
+							try {
+								if (fields[kingTwoX + i][kingTwoY + j] != Game.KING_TWO &&
+										(fields[kingTwoX + i][kingTwoY + j] == Game.PLAYER_ONE || fields[kingTwoX + i][kingTwoY + j] == Game.NOBODY)) {
+									fields[kingTwoX + i][kingTwoY + j] = Game.PLAYER_TWO;
+									power[kingTwoX + i][kingTwoY + j] = 1;
+								}
+							} catch (ArrayIndexOutOfBoundsException exc) {
+								//nista
+							}
+						}
+					}
+					power[kingTwoX][kingTwoY] -= 3;
+					if (power[kingTwoX][kingTwoY] < 1) power[kingTwoX][kingTwoY] = 1;
+					connection.sendPacket(new ClientCardPacket(fields, power, 8));
+				}
+			}
+		};
+		
+		cardTexts[9] = "Obrisi susjedna";
+		actions[9] = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (isMyTurn()) {
+					for (int i = -1; i < 2; ++i) {
+						for (int j = -1; j < 2; ++j) {
+							try {
+								if (fields[kingTwoX + i][kingTwoY + j] != Game.KING_ONE && fields[kingTwoX + i][kingTwoY + j] != Game.KING_TWO) {
+									fields[kingTwoX + i][kingTwoY + j] = Game.NOBODY;
+									power[kingTwoX + i][kingTwoY + j] = 1;
+								}
+							} catch (ArrayIndexOutOfBoundsException exc) {
+								//nista
+							}
+						}
+					}
+					connection.sendPacket(new ClientCardPacket(fields, power, 9));
+				}
+			}
+		};
+		
+		cardTexts[10] = "Obrisi sredinu (9 polja)";
+		actions[10] = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (isMyTurn()) {
+					for (int i = 1; i < 4; ++i) {
+						for (int j = 1; j < 4; ++j) {
+							if (fields[i][j] != Game.KING_ONE && fields[i][j] != Game.KING_TWO) {
+								fields[i][j] = Game.NOBODY;
+								power[i][j] = 1;
+							}
+						}
+					}
+					connection.sendPacket(new ClientCardPacket(fields, power, 10));
+				}
+			}
+		};
+		
+		cardTexts[11] = "Obrisi rubove";
+		actions[11] = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (isMyTurn()) {
+					for (int i = 0; i < 5; ++i) {
+						if (fields[i][0] != Game.KING_ONE && fields[i][0] != Game.KING_TWO) {
+							fields[i][0] = Game.NOBODY;
+							power[i][0] = 1;
+						}
+						if (fields[i][4] != Game.KING_ONE && fields[i][4] != Game.KING_TWO) {
+							fields[i][4] = Game.NOBODY;
+							power[i][4] = 1;
+						}
+					}
+					for (int j = 0; j < 5; ++j) {
+						if (fields[0][j] != Game.KING_ONE && fields[0][j] != Game.KING_TWO) {
+							fields[0][j] = Game.NOBODY;
+							power[0][j] = 1;
+						}
+						if (fields[4][j] != Game.KING_ONE && fields[4][j] != Game.KING_TWO) {
+							fields[4][j] = Game.NOBODY;
+							power[4][j] = 1;
+						}
+					}
+					connection.sendPacket(new ClientCardPacket(fields, power, 11));
 				}
 			}
 		};

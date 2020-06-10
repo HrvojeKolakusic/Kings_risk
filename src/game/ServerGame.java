@@ -18,6 +18,8 @@ public class ServerGame extends Game {
 	private Socket socket;
 	private Connection connection;
 	private int turnCounter;
+	private int textTurn;
+	private String text = "";
 	
 	public ServerGame () {
 		super(Game.PLAYER_ONE);
@@ -26,6 +28,7 @@ public class ServerGame extends Game {
 			socket = serverSocket.accept();
 			connection = new Connection(this, socket);
 			turnCounter = 1;
+			textTurn = 1;
 			initCards();
 			newCards();
 		} catch (IOException e) {
@@ -35,7 +38,7 @@ public class ServerGame extends Game {
 	
 	@Override
 	public void inputReceived(int x, int y) {
-		if (isMyTurn() && validMove(x, y)) updateField(x, y);
+		if (isMyTurn() && validMove(x, y)) updateField(x, y, -1);
 		
 	}
 	
@@ -44,22 +47,34 @@ public class ServerGame extends Game {
 		
 		if (object instanceof ClientPlayPacket) {
 			ClientPlayPacket packet = (ClientPlayPacket) object;
-			updateField(packet.getX(), packet.getY());
+			updateField(packet.getX(), packet.getY(), -1);
 		} else if (object instanceof ClientCardPacket) {
 			ClientCardPacket packet = (ClientCardPacket) object;
 			fields = packet.getFields();
 			power = packet.getPower();
-			updateField(-1, -1);
+			updateField(-1, -1, packet.getCard());
 		}
 	}
 	
-	private void updateField(int x, int y) {
+	private void updateField(int x, int y, int card) {
 		
 		if (x == -1 && y == -1) {
-			if (currentPlayer == Game.PLAYER_ONE) currentPlayer = Game.PLAYER_TWO;
-			else currentPlayer = Game.PLAYER_ONE;
+			
+			 
+			if (currentPlayer == Game.PLAYER_ONE) {
+				text = "Potez: " + String.valueOf(textTurn+1) + "\nTrenutni igrac: Crveni\nPlavi je odigrao: " + cardTexts[card];
+				currentPlayer = Game.PLAYER_TWO;
+			} else {
+				text = "Potez: " + String.valueOf(textTurn+1) + "\nTrenutni igrac: Plavi\nCrveni je odigrao: " + cardTexts[card];
+				currentPlayer = Game.PLAYER_ONE;
+			}
+			
 		} else {
 			if (currentPlayer == Game.PLAYER_ONE) {
+				
+				text = "Potez: " + String.valueOf(textTurn+1) + "\nTrenutni igrac: Crveni\nPlavi je odigrao: Kralj na (" 
+				+ String.valueOf(y+1) + "," + String.valueOf(x+1) + ")";
+				
 				if (fields[x][y] == Game.PLAYER_ONE) {
 					int carryPower = power[kingOneX][kingOneY];
 					int leavePower = power[x][y] + carryPower - 9;
@@ -82,6 +97,10 @@ public class ServerGame extends Game {
 				currentPlayer = Game.PLAYER_TWO;
 				
 			} else {
+				
+				text = "Potez: " + String.valueOf(textTurn+1) + "\nTrenutni igrac: Plavi\nCrveni je odigrao: Kralj na (" 
+				+ String.valueOf(y+1) + "," + String.valueOf(x+1) + ")";
+				
 				if (fields[x][y] == Game.PLAYER_TWO) {
 					int carryPower = power[kingTwoX][kingTwoY];
 					int leavePower = power[x][y] + carryPower - 9;
@@ -108,6 +127,7 @@ public class ServerGame extends Game {
 		if (currentPlayer == thisPlayer) newCards();
 		
 		turnCounter++;
+		textTurn++;
 		if (turnCounter >= 7) {
 			for (int i = 0; i < 5; ++i) {
 				for (int j = 0; j < 5; ++j) {
@@ -119,15 +139,16 @@ public class ServerGame extends Game {
 			turnCounter = 1;
 		}
 		
-		connection.sendPacket(new UpdatePacket(fields, power, currentPlayer, kingOneX, kingOneY, kingTwoX, kingTwoY));
+		window.textBox.setText(text);
+		connection.sendPacket(new UpdatePacket(fields, power, currentPlayer, kingOneX, kingOneY, kingTwoX, kingTwoY, text));
 		gameWindow.repaint(new Rectangle(900, 900));
 			
 		int winner = checkWin();
 		if (winner != Game.NOBODY) endGame(winner);
 		
-		if (!hasValidMove()) {
-			endGame(Game.NOBODY);
-		}
+//		if (!hasValidMove()) {
+//			endGame(Game.NOBODY);
+//		}
 	}
 	
 	private boolean validMove(int x, int y) {
@@ -168,25 +189,25 @@ public class ServerGame extends Game {
 		return Game.NOBODY;
 	}
 	
-	private boolean hasValidMove() {
-		if (currentPlayer == Game.PLAYER_ONE) {
-			for (int i = 0; i < 5; ++i) {
-				for (int j = 0; j < 5; ++j) {
-					if (i == kingOneX && j == kingOneY) continue;
-					if (validMove(i, j)) return true;
-				}
-			}
-		} else {
-			for (int i = 0; i < 5; ++i) {
-				for (int j = 0; j < 5; ++j) {
-					if (i == kingTwoX && j == kingTwoY) continue;
-					if (validMove(i, j)) return true;
-				}
-			}
-		}
-		
-		return false;
-	}
+//	private boolean hasValidMove() {
+//		if (currentPlayer == Game.PLAYER_ONE) {
+//			for (int i = 0; i < 5; ++i) {
+//				for (int j = 0; j < 5; ++j) {
+//					if (i == kingOneX && j == kingOneY) continue;
+//					if (validMove(i, j)) return true;
+//				}
+//			}
+//		} else {
+//			for (int i = 0; i < 5; ++i) {
+//				for (int j = 0; j < 5; ++j) {
+//					if (i == kingTwoX && j == kingTwoY) continue;
+//					if (validMove(i, j)) return true;
+//				}
+//			}
+//		}
+//		
+//		return false;
+//	}
 	
 	private void endGame(int winner) {
 		showWinner(winner);
@@ -291,7 +312,7 @@ public class ServerGame extends Game {
 						}
 					}
 					power[kingOneX][kingOneY] = 1;
-					updateField(-1, -1);
+					updateField(-1, -1, 0);
 				}
 			}
 		};
@@ -305,7 +326,7 @@ public class ServerGame extends Game {
 				if (isMyTurn()) {
 					power[kingOneX][kingOneY] += 3;
 					if (power[kingOneX][kingOneY] > 9) power[kingOneX][kingOneY] = 9;
-					updateField(-1, -1);
+					updateField(-1, -1, 1);
 				}
 			}
 		};
@@ -323,7 +344,7 @@ public class ServerGame extends Game {
 						}
 					}
 					power[kingOneX][kingOneY] = 1;
-					updateField(-1, -1);
+					updateField(-1, -1, 2);
 				}
 			}
 		};
@@ -337,12 +358,12 @@ public class ServerGame extends Game {
 				if (isMyTurn()) {
 					power[kingTwoX][kingTwoY] -= 3;
 					if (power[kingTwoX][kingTwoY] < 1) power[kingTwoX][kingTwoY] = 1;
-					updateField(-1, -1);
+					updateField(-1, -1, 3);
 				}
 			}
 		};
 		
-		cardTexts[4] = "Zauzmi kraljev red, kralj =1";
+		cardTexts[4] = "Zauzmi kraljev stupac, kralj =1";
 		actions[4] = new ActionListener() {
 			
 			@Override
@@ -357,12 +378,12 @@ public class ServerGame extends Game {
 						}
 					}
 					power[kingOneX][kingOneY] = 1;
-					updateField(-1, -1);
+					updateField(-1, -1, 4);
 				}
 			}
 		};
 		
-		cardTexts[5] = "Zauzmi kraljev stupac, kralj =1";
+		cardTexts[5] = "Zauzmi kraljev red, kralj =1";
 		actions[5] = new ActionListener() {
 			
 			@Override
@@ -377,7 +398,7 @@ public class ServerGame extends Game {
 						}
 					}
 					power[kingOneX][kingOneY] = 1;
-					updateField(-1, -1);
+					updateField(-1, -1, 5);
 				}
 			}
 		};
@@ -408,7 +429,7 @@ public class ServerGame extends Game {
 							if (fields[i][j] == Game.PLAYER_ONE || fields[i][j] == Game.KING_ONE) power[i][j] = 1;
 						}
 					}
-					updateField(-1, -1);
+					updateField(-1, -1, 6);
 				}
 			}
 		};
@@ -439,7 +460,110 @@ public class ServerGame extends Game {
 							if (fields[i][j] == Game.PLAYER_ONE || fields[i][j] == Game.KING_ONE) power[i][j] = 1;
 						}
 					}
-					updateField(-1, -1);
+					updateField(-1, -1, 7);
+				}
+			}
+		};
+		
+		cardTexts[8] = "Zauzmi susjedna, kralj -3";
+		actions[8] = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (isMyTurn()) {
+					for (int i = -1; i < 2; ++i) {
+						for (int j = -1; j < 2; ++j) {
+							try {
+								if (fields[kingOneX + i][kingOneY + j] != Game.KING_ONE &&
+										(fields[kingOneX + i][kingOneY + j] == Game.PLAYER_TWO || fields[kingOneX + i][kingOneY + j] == Game.NOBODY)) {
+									fields[kingOneX + i][kingOneY + j] = Game.PLAYER_ONE;
+									power[kingOneX + i][kingOneY + j] = 1;
+								}
+							} catch (ArrayIndexOutOfBoundsException exc) {
+								//nista
+							}
+						}
+					}
+					power[kingOneX][kingOneY] -= 3;
+					if (power[kingOneX][kingOneY] < 1) power[kingOneX][kingOneY] = 1;
+					updateField(-1, -1, 8);
+				}
+			}
+		};
+		
+		cardTexts[9] = "Obrisi susjedna";
+		actions[9] = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (isMyTurn()) {
+					for (int i = -1; i < 2; ++i) {
+						for (int j = -1; j < 2; ++j) {
+							try {
+								if (fields[kingOneX + i][kingOneY + j] != Game.KING_ONE && fields[kingOneX + i][kingOneY + j] != Game.KING_TWO) {
+									fields[kingOneX + i][kingOneY + j] = Game.NOBODY;
+									power[kingOneX + i][kingOneY + j] = 1;
+								}
+							} catch (ArrayIndexOutOfBoundsException exc) {
+								//nista
+							}
+						}
+					}
+					updateField(-1, -1, 9);
+				}
+			}
+		};
+		
+		cardTexts[10] = "Obrisi sredinu (9 polja)";
+		actions[10] = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (isMyTurn()) {
+					for (int i = 1; i < 4; ++i) {
+						for (int j = 1; j < 4; ++j) {
+							if (fields[i][j] != Game.KING_ONE && fields[i][j] != Game.KING_TWO) {
+								fields[i][j] = Game.NOBODY;
+								power[i][j] = 1;
+							}
+						}
+					}
+					updateField(-1, -1, 10);
+				}
+			}
+		};
+		
+		cardTexts[11] = "Obrisi rubove";
+		actions[11] = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (isMyTurn()) {
+					for (int i = 0; i < 5; ++i) {
+						if (fields[i][0] != Game.KING_ONE && fields[i][0] != Game.KING_TWO) {
+							fields[i][0] = Game.NOBODY;
+							power[i][0] = 1;
+						}
+						if (fields[i][4] != Game.KING_ONE && fields[i][4] != Game.KING_TWO) {
+							fields[i][4] = Game.NOBODY;
+							power[i][4] = 1;
+						}
+					}
+					for (int j = 0; j < 5; ++j) {
+						if (fields[0][j] != Game.KING_ONE && fields[0][j] != Game.KING_TWO) {
+							fields[0][j] = Game.NOBODY;
+							power[0][j] = 1;
+						}
+						if (fields[4][j] != Game.KING_ONE && fields[4][j] != Game.KING_TWO) {
+							fields[4][j] = Game.NOBODY;
+							power[4][j] = 1;
+						}
+					}
+					updateField(-1, -1, 11);
 				}
 			}
 		};
