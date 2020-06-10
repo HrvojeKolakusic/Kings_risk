@@ -27,16 +27,7 @@ public class ServerGame extends Game {
 			connection = new Connection(this, socket);
 			turnCounter = 1;
 			initCards();
-			//update
-			window.btn1.addActionListener(actions[0]);
-			window.btn1.setText(cardTexts[0]);
-			window.btn2.addActionListener(actions[1]);
-			window.btn2.setText(cardTexts[1]);
-			window.btn3.addActionListener(actions[2]);
-			window.btn3.setText(cardTexts[2]);
-			window.btn4.addActionListener(actions[3]);
-			window.btn4.setText(cardTexts[3]);
-			//update
+			newCards();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -113,6 +104,8 @@ public class ServerGame extends Game {
 				currentPlayer = Game.PLAYER_ONE;
 			}
 		}
+		
+		if (currentPlayer == thisPlayer) newCards();
 		
 		turnCounter++;
 		if (turnCounter >= 7) {
@@ -210,12 +203,82 @@ public class ServerGame extends Game {
 		}
 	}
 	
+	private void newCards() {
+		for (int i = 0; i < MAX_CARDS; ++i) {
+			takenCards[i] = false;
+		}
+		
+		int card = (int)(Math.random() * MAX_CARDS);
+		while (true) {
+			if (!takenCards[card]) {
+				takenCards[card] = true;
+				for (ActionListener l : window.btn1.getActionListeners()) {
+					window.btn1.removeActionListener(l);
+				}
+				window.btn1.addActionListener(actions[card]);
+				window.btn1.setText(cardTexts[card]);
+				break;
+			} else {
+				card++;
+				card = card % MAX_CARDS;
+			}
+		}
+		
+		card = (int)(Math.random() * MAX_CARDS);
+		while (true) {
+			if (!takenCards[card]) {
+				takenCards[card] = true;
+				for (ActionListener l : window.btn2.getActionListeners()) {
+					window.btn2.removeActionListener(l);
+				}
+				window.btn2.addActionListener(actions[card]);
+				window.btn2.setText(cardTexts[card]);
+				break;
+			} else {
+				card++;
+				card = card % MAX_CARDS;
+			}
+		}
+		
+		card = (int)(Math.random() * MAX_CARDS);
+		while (true) {
+			if (!takenCards[card]) {
+				takenCards[card] = true;
+				for (ActionListener l : window.btn3.getActionListeners()) {
+					window.btn3.removeActionListener(l);
+				}
+				window.btn3.addActionListener(actions[card]);
+				window.btn3.setText(cardTexts[card]);
+				break;
+			} else {
+				card++;
+				card = card % MAX_CARDS;
+			}
+		}
+		
+		card = (int)(Math.random() * MAX_CARDS);
+		while (true) {
+			if (!takenCards[card]) {
+				takenCards[card] = true;
+				for (ActionListener l : window.btn4.getActionListeners()) {
+					window.btn4.removeActionListener(l);
+				}
+				window.btn4.addActionListener(actions[card]);
+				window.btn4.setText(cardTexts[card]);
+				break;
+			} else {
+				card++;
+				card = card % MAX_CARDS;
+			}
+		}
+	}
+	
 	// CARDS
 	private void initCards() {
-		cardTexts = new String[4];
-		actions = new ActionListener[4];
+		cardTexts = new String[MAX_CARDS];
+		actions = new ActionListener[MAX_CARDS];
 		
-		cardTexts[0] = "Povecaj jacinu svojih\n polja +1";
+		cardTexts[0] = "Svoja polja +1, kralj =1";
 		actions[0] = new ActionListener() {
 			
 			@Override
@@ -224,29 +287,30 @@ public class ServerGame extends Game {
 				if (isMyTurn()) {
 					for (int i = 0; i < 5; ++i) {
 						for (int j = 0; j < 5; ++j) {
-							if ((fields[i][j] == PLAYER_ONE || fields[i][j] == KING_ONE) && power[i][j] < 9) power[i][j]++;
+							if (fields[i][j] == PLAYER_ONE && power[i][j] < 9) power[i][j]++;
 						}
 					}
+					power[kingOneX][kingOneY] = 1;
 					updateField(-1, -1);
 				}
 			}
 		};
 		
-		cardTexts[1] = "Povecaj jacinu svoga\n kralja +5";
+		cardTexts[1] = "Kralj +3";
 		actions[1] = new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
 				if (isMyTurn()) {
-					power[kingOneX][kingOneY] += 5;
+					power[kingOneX][kingOneY] += 3;
 					if (power[kingOneX][kingOneY] > 9) power[kingOneX][kingOneY] = 9;
 					updateField(-1, -1);
 				}
 			}
 		};
 		
-		cardTexts[2] = "Smanji jacinu \nneprijateljskih polja -1";
+		cardTexts[2] = "Neprijateljska polja -1, kralj=1";
 		actions[2] = new ActionListener() {
 			
 			@Override
@@ -258,12 +322,13 @@ public class ServerGame extends Game {
 							if ((fields[i][j] == Game.PLAYER_TWO || fields[i][j] == Game.KING_TWO) && power[i][j] > 1) power[i][j]--;	
 						}
 					}
+					power[kingOneX][kingOneY] = 1;
 					updateField(-1, -1);
 				}
 			}
 		};
 		
-		cardTexts[3] = "Smanji jacinu \nneprijateljskog kralja -3";
+		cardTexts[3] = "Neprijateljski kralj -3";
 		actions[3] = new ActionListener() {
 			
 			@Override
@@ -276,6 +341,109 @@ public class ServerGame extends Game {
 				}
 			}
 		};
+		
+		cardTexts[4] = "Zauzmi kraljev red, kralj =1";
+		actions[4] = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (isMyTurn()) {
+					
+					for (int j = 0; j < 5; ++j) {
+						if (fields[kingOneX][j] == Game.PLAYER_TWO || fields[kingOneX][j] == Game.NOBODY) {
+							fields[kingOneX][j] = Game.PLAYER_ONE;
+							power[kingOneX][j] = 1;
+						}
+					}
+					power[kingOneX][kingOneY] = 1;
+					updateField(-1, -1);
+				}
+			}
+		};
+		
+		cardTexts[5] = "Zauzmi kraljev stupac, kralj =1";
+		actions[5] = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (isMyTurn()) {
+					
+					for (int i = 0; i < 5; ++i) {
+						if (fields[i][kingOneY] == Game.PLAYER_TWO || fields[i][kingOneY] == Game.NOBODY) {
+							fields[i][kingOneY] = Game.PLAYER_ONE;
+							power[i][kingOneY] = 1;
+						}
+					}
+					power[kingOneX][kingOneY] = 1;
+					updateField(-1, -1);
+				}
+			}
+		};
+		
+		cardTexts[6] = "Zauzmi kriz, polja =1";
+		actions[6] = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (isMyTurn()) {
+					for (int i = 0; i < 5; ++i) {
+						if (fields[i][2] == Game.PLAYER_TWO || fields[i][2] == Game.NOBODY) {
+							fields[i][2] = Game.PLAYER_ONE;
+							power[i][2] = 1;
+						}
+					}
+					
+					for (int j = 0; j < 5; ++j) {
+						if (fields[2][j] == Game.PLAYER_TWO || fields[2][j] == Game.NOBODY) {
+							fields[2][j] = Game.PLAYER_ONE;
+							power[2][j] = 1;
+						}
+					}
+					
+					for (int i = 0; i < 5; ++i) {
+						for (int j = 0; j < 5; ++j) {
+							if (fields[i][j] == Game.PLAYER_ONE || fields[i][j] == Game.KING_ONE) power[i][j] = 1;
+						}
+					}
+					updateField(-1, -1);
+				}
+			}
+		};
+		
+		cardTexts[7] = "Zauzmi dijagonale, polja =1";
+		actions[7] = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				if (isMyTurn()) {
+					for (int i = 0, j = 0; i < 5; ++i, ++j) {
+						if (fields[i][j] == Game.PLAYER_TWO || fields[i][j] == Game.NOBODY) {
+							fields[i][j] = Game.PLAYER_ONE;
+							power[i][j] = 1;
+						}
+					}
+					
+					for (int i = 0, j = 4; i < 5; ++i, --j) {
+						if (fields[i][j] == Game.PLAYER_TWO || fields[i][j] == Game.NOBODY) {
+							fields[i][j] = Game.PLAYER_ONE;
+							power[i][j] = 1;
+						}
+					}
+					
+					for (int i = 0; i < 5; ++i) {
+						for (int j = 0; j < 5; ++j) {
+							if (fields[i][j] == Game.PLAYER_ONE || fields[i][j] == Game.KING_ONE) power[i][j] = 1;
+						}
+					}
+					updateField(-1, -1);
+				}
+			}
+		};
+		
 	}
 
 

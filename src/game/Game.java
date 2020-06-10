@@ -1,6 +1,5 @@
 package game;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JOptionPane;
@@ -22,6 +21,9 @@ public abstract class Game {
 	public static final int KING_ONE = 3;
 	public static final int KING_TWO = 4;
 	
+	
+	public static final int MAX_CARDS = 8;
+	protected boolean[] takenCards;
 	protected String[] cardTexts;
 	protected ActionListener[] actions;
 	
@@ -44,6 +46,7 @@ public abstract class Game {
 		gameWindow = new GameWindow(this);
 		fields = new int[5][5];
 		power = new int[5][5];
+		takenCards = new boolean[MAX_CARDS];
 		kingOneX = 0;
 		kingOneY = 0;
 		kingTwoX = 4;
