@@ -11,6 +11,9 @@ import javax.swing.JPanel;
 import game.Game;
 import game.res.Resources;
 
+/*
+ * razred sluzi kao glavni prozor na kojem se crta polje
+ */
 public class GameWindow extends JPanel {
 	
 

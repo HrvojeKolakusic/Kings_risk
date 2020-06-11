@@ -9,6 +9,7 @@ import java.net.Socket;
 import game.packets.ClientCardPacket;
 import game.packets.ClientPlayPacket;
 import game.packets.GameEndPacket;
+import game.packets.LoadGamePacket;
 import game.packets.UpdatePacket;
 
 public class ClientGame extends Game {
@@ -16,30 +17,29 @@ public class ClientGame extends Game {
 	private Socket socket;
 	private Connection connection;
 
-	
-	public ClientGame() {
+	public ClientGame(String ip, int port) {
 		super(Game.PLAYER_TWO);
 		try {
-			socket = new Socket("localhost", Game.PORT);
+			socket = new Socket(ip, port);
 			connection = new Connection(this, socket);
-			initCards();
-			newCards();
+			initCards();	//funkcija stvara nove ActionListener-e i tekstove za karte
+			newCards();		//funkcija odabire 4 nove karte
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@Override
-	public void inputReceived(int x, int y) {
+	public void inputReceived(int x, int y) {		//funkcija se poziva kada se mišem pritisne na neko polje
 		if (isMyTurn() && validMove(x, y)) {
-			connection.sendPacket(new ClientPlayPacket(x, y));
+			connection.sendPacket(new ClientPlayPacket(x, y));		//klijent šalje paket serveru da je odigrao potez
 		}
 	}
 	
 	@Override
-	public void packetReceived(Object object) {
+	public void packetReceived(Object object) {		//funkcija se poziva kada klijent primi paket
 		
-		if (object instanceof UpdatePacket) {
+		if (object instanceof UpdatePacket) {		
 			UpdatePacket packet = (UpdatePacket) object;
 			fields = packet.getFields();
 			power = packet.getPower();
@@ -50,16 +50,32 @@ public class ClientGame extends Game {
 			kingTwoX = packet.getKingTwoX();
 			kingTwoY = packet.getKingTwoY();
 			window.textBox.setText(packet.getText());
+			
 		} else if (object instanceof GameEndPacket) {
 			GameEndPacket packet = (GameEndPacket) object;
 			showWinner(packet.getWinner());
-		}
+			
+		} /*else if (object instanceof LoadGamePacket) {		//kod koji bi sluzio za ucitavanje spremljene igre
+			LoadGamePacket packet = (LoadGamePacket) object;
+			
+			currentPlayer = packet.getCurrentPlayer();
+			if (currentPlayer == Game.PLAYER_TWO) {
+				setCards(packet.getTakenCards());
+			}
+			fields = packet.getFields();
+			power = packet.getPower();
+			kingOneX = packet.getKingOneX();
+			kingOneY = packet.getKingOneY();
+			kingTwoX = packet.getKingTwoX();
+			kingTwoY = packet.getKingTwoY();
+			window.textBox.setText(packet.getText());
+		}*/
 		
-		gameWindow.repaint(new Rectangle(900, 900));
-		
+		gameWindow.repaint(new Rectangle(900, 900));		//ponovno se poziva funkcija paint() sa ogranicenjem 900 * 900 piksela
+															
 	}
 	
-	private boolean validMove(int x, int y) {
+	private boolean validMove(int x, int y) {				//funkcija provjerava da li je pritisnuto polje uz kralja
 		
 		if (fields[x][y] == currentPlayer) return true;
 		if (power[kingTwoX][kingTwoY] > power[x][y]) {
@@ -76,7 +92,7 @@ public class ClientGame extends Game {
 
 
 	@Override
-	public void close() {
+	public void close() {	//funkcija se poziva pri gasenju aplikacije
 		try {
 			connection.close();
 			socket.close();
@@ -87,7 +103,7 @@ public class ClientGame extends Game {
 	}
 
 
-	private void newCards() {
+	private void newCards() {	// funkcija odabire 4 nove karte
 		for (int i = 0; i < MAX_CARDS; ++i) {
 			takenCards[i] = false;
 		}
@@ -157,8 +173,46 @@ public class ClientGame extends Game {
 		}
 	}
 	
+	/*private void setCards(boolean[] taken) {				//kod koji bi sluzio da ucita karte koje su spremljene
+		for (int i = 0; i < Game.MAX_CARDS; ++i) {
+			if (taken[i]) {
+				window.btn1.addActionListener(actions[i]);
+				window.btn1.setText(cardTexts[i]);
+				taken[i] = false;
+				break;
+			}
+		}
+		
+		for (int i = 0; i < Game.MAX_CARDS; ++i) {
+			if (taken[i]) {
+				window.btn2.addActionListener(actions[i]);
+				window.btn2.setText(cardTexts[i]);
+				taken[i] = false;
+				break;
+			}
+		}
+		
+		for (int i = 0; i < Game.MAX_CARDS; ++i) {
+			if (taken[i]) {
+				window.btn3.addActionListener(actions[i]);
+				window.btn3.setText(cardTexts[i]);
+				taken[i] = false;
+				break;
+			}
+		}
+		
+		for (int i = 0; i < Game.MAX_CARDS; ++i) {
+			if (taken[i]) {
+				window.btn4.addActionListener(actions[i]);
+				window.btn4.setText(cardTexts[i]);
+				taken[i] = false;
+				break;
+			}
+		}
+	}*/
+	
 	// CARDS
-	private void initCards() {
+	private void initCards() {				//funkcija stvara nove ActionListener-e i tekstove za karte
 		cardTexts = new String[MAX_CARDS];
 		actions = new ActionListener[MAX_CARDS];
 		

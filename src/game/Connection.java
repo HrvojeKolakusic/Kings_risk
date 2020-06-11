@@ -6,7 +6,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
-
+/*
+ * razred sluzi kao dretva koja salje i prima podatke izmedu servera i klijenta
+ */
 public class Connection implements Runnable {
 
 	private ObjectOutputStream outputStream;

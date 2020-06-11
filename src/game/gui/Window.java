@@ -11,6 +11,9 @@ import javax.swing.JFrame;
 
 import game.Game;
 
+/*
+ * razred koji sluzi kao glavni prozor u koji stavljamo, izmedu ostalog, gameWindow
+ */
 public class Window extends JFrame {
 
 	private static final long serialVersionUID = -7801504305278205215L;

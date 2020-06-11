@@ -7,6 +7,11 @@ import javax.swing.JOptionPane;
 import game.gui.GameWindow;
 import game.gui.Window;
 
+/*
+ * abstraktni razred kojeg nasljeduju ServerGame i ClientGame
+ * u konstruktoru se postavlja pocetak igre
+ * definirane su abstraktne fukcije koje ServerGame i ClientGame moraju implementirati
+ */
 public abstract class Game {
 
 	public static final int PORT = 55555;
@@ -73,12 +78,9 @@ public abstract class Game {
 	public abstract void close();
 	
 	protected void showWinner(int winner) {
-		
-		if (winner == NOBODY) JOptionPane.showMessageDialog(null, "TIE!");
-		else {
-			if (winner == PLAYER_ONE) JOptionPane.showMessageDialog(null, "Player one WINS!");
-			else JOptionPane.showMessageDialog(null, "Player two WINS!");
-		}
+		if (winner == PLAYER_ONE) JOptionPane.showMessageDialog(null, "Player one WINS!");
+		else JOptionPane.showMessageDialog(null, "Player two WINS!");
+	
 	}
 	
 	protected boolean isMyTurn() {
