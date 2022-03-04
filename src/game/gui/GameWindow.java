@@ -20,6 +20,8 @@ public class GameWindow extends JPanel {
 	private static final long serialVersionUID = 8326219303276685725L;
 	
 	private Game game;
+	
+	private Resources res = new Resources();
 
 	public GameWindow(Game game) {
 		this.game = game;
@@ -45,8 +47,8 @@ public class GameWindow extends JPanel {
 			for (int y = 0; y < 5; ++y) {
 				int field = game.getFields()[x][y];
 				if (field != Game.NOBODY) {
-					g2D.drawImage(Resources.colors[field - 1], x * Game.FIELD_X + 5, y * Game.FIELD_Y + 5, Game.FIELD_X - 10, Game.FIELD_Y - 10, null);
-					g2D.drawImage(Resources.numbers[game.getPower()[x][y] - 1], x * Game.FIELD_X + 5, y * Game.FIELD_Y + 5, 30, 30, null);
+					g2D.drawImage(res.colors[field - 1], x * Game.FIELD_X + 5, y * Game.FIELD_Y + 5, Game.FIELD_X - 10, Game.FIELD_Y - 10, null);
+					g2D.drawImage(res.numbers[game.getPower()[x][y] - 1], x * Game.FIELD_X + 5, y * Game.FIELD_Y + 5, 30, 30, null);
 				}
 			}
 		}
