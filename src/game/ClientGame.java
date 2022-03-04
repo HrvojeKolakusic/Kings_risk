@@ -9,8 +9,9 @@ import java.net.Socket;
 import game.packets.ClientCardPacket;
 import game.packets.ClientPlayPacket;
 import game.packets.GameEndPacket;
-import game.packets.LoadGamePacket;
 import game.packets.UpdatePacket;
+
+//import game.packets.LoadGamePacket;
 
 public class ClientGame extends Game {
 	
