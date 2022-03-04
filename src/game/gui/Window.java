@@ -37,27 +37,27 @@ public class Window extends JFrame {
 		addWindowListener(new Listener());
 		
 		btn1 = new JButton("btn1");
-		btn1.setBounds(900, 0, 300, 300);
+		btn1.setBounds(game.X, 0, 200, 200);
 		btn1.setFont(new Font("Arial", Font.PLAIN, 16));
 		add(btn1);
 		
 		btn2 = new JButton("btn2");
-		btn2.setBounds(1200, 0, 300, 300);
+		btn2.setBounds(game.X + 200, 0, 200, 200);
 		btn2.setFont(new Font("Arial", Font.PLAIN, 16));
 		add(btn2);
 		
 		btn3 = new JButton("btn1");
-		btn3.setBounds(900, 300, 300, 300);
+		btn3.setBounds(game.X, 200, 200, 200);
 		btn3.setFont(new Font("Arial", Font.PLAIN, 16));
 		add(btn3);
 		
 		btn4 = new JButton("btn1");
-		btn4.setBounds(1200, 300, 300, 300);
+		btn4.setBounds(game.X + 200, 200, 200, 200);
 		btn4.setFont(new Font("Arial", Font.PLAIN, 16));
 		add(btn4);
 		
 		textBox = new TextArea("Potez: 1\nTrenutni igrac: Plavi");
-		textBox.setBounds(900, 600, 600, 300);
+		textBox.setBounds(game.X, 400, 400, 400);
 		textBox.setFont(new Font("Arial", Font.PLAIN, 20));
 		textBox.setEditable(false);
 		add(textBox);

@@ -16,8 +16,8 @@ public abstract class Game {
 
 	public static final int PORT = 55555;
 	
-	public static final int X = 900;
-	public static final int Y = 900;
+	public static final int X = 800;
+	public static final int Y = 800;
 	public static final int FIELD_X = X / 5;
 	public static final int FIELD_Y = Y / 5;
 	public static final int NOBODY = 0;
@@ -47,7 +47,10 @@ public abstract class Game {
 	
 	public Game(int thisPlayer) {
 		this.thisPlayer = thisPlayer;
-		window = new Window(this, "Zavrsni", 1500, Y);
+		String title;
+		if (thisPlayer == Game.PLAYER_ONE) title = "Kings risk: Player Blue";
+		else title = "Kings risk: Player Red";
+		window = new Window(this, title, 1200, Y);
 		gameWindow = new GameWindow(this);
 		fields = new int[5][5];
 		power = new int[5][5];

@@ -34,7 +34,7 @@ public class GameWindow extends JPanel {
 		g2D.setStroke(new BasicStroke(5));
 		
 		for (int x = Game.FIELD_X; x <= 4 * Game.FIELD_X; x += Game.FIELD_X) {
-			g2D.drawLine(x, 0, x, Game.Y);
+			g2D.drawLine(x, 0, x, Game.Y - 5);
 		}
 		
 		for (int y = Game.FIELD_Y; y <= 4 * Game.FIELD_Y; y += Game.FIELD_Y) {

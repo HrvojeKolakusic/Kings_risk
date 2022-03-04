@@ -38,7 +38,7 @@ public class MainWindow extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setTitle("Main menu");
-		setVisible(true);
+
 		
 		serverBtn = new JButton("Start as server");
 		serverBtn.setBounds(150, 50, 200, 100);
@@ -52,6 +52,8 @@ public class MainWindow extends JFrame {
 		loadBtn.setBounds(150, 350, 200, 100);
 		loadBtn.setEnabled(false);
 		add(loadBtn);
+		
+		setVisible(true);
 		
 		serverBtn.addActionListener(new ActionListener() {
 			

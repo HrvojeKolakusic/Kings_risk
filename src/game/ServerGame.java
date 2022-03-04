@@ -30,8 +30,8 @@ public class ServerGame extends Game {
 			connection = new Connection(this, socket);
 			turnCounter = 1;
 			textTurn = 1;
-			initCards();		//funkcija stvara nove ActionListener-e i tekstove za karte
-			newCards();			//funkcija odabire 4 nove karte
+			initCards();		//funkcija stvara nove ActionListener-e i tekstove za kartice
+			newCards();			//funkcija odabire 4 nove kartice
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -186,9 +186,11 @@ public class ServerGame extends Game {
 		/*
 		 * update textBox u dolje desnom kutu i javi klijentu promjene
 		 */
+		
+		text = text.replaceAll("<html>", "").replaceAll("</html>", "").replaceAll("<br>", "");
 		window.textBox.setText(text);
 		connection.sendPacket(new UpdatePacket(fields, power, currentPlayer, kingOneX, kingOneY, kingTwoX, kingTwoY, text));
-		gameWindow.repaint(new Rectangle(900, 900));
+		gameWindow.repaint(new Rectangle(800, 800));
 			
 		int winner = checkWin();
 		if (winner != Game.NOBODY) endGame(winner); //ako je partija gotova
@@ -348,7 +350,7 @@ public class ServerGame extends Game {
 		cardTexts = new String[MAX_CARDS];
 		actions = new ActionListener[MAX_CARDS];
 		
-		cardTexts[0] = "Svoja polja +1, kralj =1";
+		cardTexts[0] = "<html>Svoja polja +1,<br>kralj =1</html>";
 		actions[0] = new ActionListener() {
 			
 			@Override
@@ -380,7 +382,7 @@ public class ServerGame extends Game {
 			}
 		};
 		
-		cardTexts[2] = "Neprijateljska polja -1, kralj=1";
+		cardTexts[2] = "<html>Neprijateljska<br>polja -1,<br>kralj=1</html>";
 		actions[2] = new ActionListener() {
 			
 			@Override
@@ -398,7 +400,7 @@ public class ServerGame extends Game {
 			}
 		};
 		
-		cardTexts[3] = "Neprijateljski kralj -3";
+		cardTexts[3] = "<html>Neprijateljski<br>kralj -3</html>";
 		actions[3] = new ActionListener() {
 			
 			@Override
@@ -412,7 +414,7 @@ public class ServerGame extends Game {
 			}
 		};
 		
-		cardTexts[4] = "Zauzmi kraljev stupac, kralj =1";
+		cardTexts[4] = "<html>Zauzmi kraljev<br>stupac,<br>kralj =1</html>";
 		actions[4] = new ActionListener() {
 			
 			@Override
@@ -432,7 +434,7 @@ public class ServerGame extends Game {
 			}
 		};
 		
-		cardTexts[5] = "Zauzmi kraljev red, kralj =1";
+		cardTexts[5] = "<html>Zauzmi<br>kraljev red,<br>kralj =1</html>";
 		actions[5] = new ActionListener() {
 			
 			@Override
@@ -452,7 +454,7 @@ public class ServerGame extends Game {
 			}
 		};
 		
-		cardTexts[6] = "Zauzmi kriz, polja =1";
+		cardTexts[6] = "<html>Zauzmi kriz,<br>polja =1</html>";
 		actions[6] = new ActionListener() {
 			
 			@Override
@@ -483,7 +485,7 @@ public class ServerGame extends Game {
 			}
 		};
 		
-		cardTexts[7] = "Zauzmi dijagonale, polja =1";
+		cardTexts[7] = "<html>Zauzmi<br>dijagonale,<br>polja =1</html>";
 		actions[7] = new ActionListener() {
 			
 			@Override
@@ -514,7 +516,7 @@ public class ServerGame extends Game {
 			}
 		};
 		
-		cardTexts[8] = "Zauzmi susjedna, kralj -3";
+		cardTexts[8] = "<html>Zauzmi susjedna,<br>kralj -3</html>";
 		actions[8] = new ActionListener() {
 			
 			@Override
@@ -565,7 +567,7 @@ public class ServerGame extends Game {
 			}
 		};
 		
-		cardTexts[10] = "Obrisi sredinu (9 polja)";
+		cardTexts[10] = "<html>Obrisi sredinu<br>(9 polja)</html>";
 		actions[10] = new ActionListener() {
 			
 			@Override
